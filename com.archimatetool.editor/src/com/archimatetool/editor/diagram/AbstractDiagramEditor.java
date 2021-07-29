@@ -35,6 +35,7 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
+import org.eclipse.gef.editparts.ZoomListener;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.internal.InternalGEFPlugin;
 import org.eclipse.gef.palette.PaletteListener;
@@ -358,6 +359,19 @@ implements IDiagramModelEditor, IContextProvider, ITabbedPropertySheetPageContri
 
         // Set CSS class name
         viewer.getControl().setData("org.eclipse.e4.ui.css.CssClassName", "ArchiFigureCanvas"); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        // Set zoom level from persisted level
+        ZoomManager zoomManager = (ZoomManager)getAdapter(ZoomManager.class);
+        String zoomLevel = ((DiagramEditorInput)getEditorInput()).getZoomLevel();
+        zoomManager.setZoomAsText(zoomLevel);
+
+        // Listen to zoom levels to store it in Editor Input
+        zoomManager.addZoomListener(new ZoomListener() {
+            @Override
+            public void zoomChanged(double zoom) {
+                ((DiagramEditorInput)getEditorInput()).setZoomLevel(zoomManager.getZoomAsText());
+            }
+        });
     }
     
     @Override
