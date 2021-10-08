@@ -57,6 +57,7 @@ import com.archimatetool.help.ArchiHelpPlugin;
 import com.archimatetool.model.IArchimateConcept;
 import com.archimatetool.model.IArchimateDiagramModel;
 import com.archimatetool.model.IDiagramModelComponent;
+import com.archimatetool.model.IHintProvider;
 
 
 
@@ -260,6 +261,7 @@ implements IContextProvider, IHintsView, ISelectionListener, IComponentSelection
         Object actualObject = selected;
 
         // Adaptable, dig in to get to get the actual object
+        // Actual object could be IArchimateConcept or IDiagramModelComponent
         if(selected instanceof IAdaptable) {
             // ArchiMate concept (in EditPart)
             actualObject = ((IAdaptable)selected).getAdapter(IArchimateConcept.class);
@@ -279,9 +281,9 @@ implements IContextProvider, IHintsView, ISelectionListener, IComponentSelection
             path = hint.path;
         }
         
-        // This is a Help Hint Provider
-        if(actualObject instanceof IHelpHintProvider) {
-            IHelpHintProvider provider = (IHelpHintProvider)actualObject;
+        // This is an Application Help Hint Provider
+        if(selected instanceof IHelpHintProvider) {
+            IHelpHintProvider provider = (IHelpHintProvider)selected;
             
             // Title set
             if(StringUtils.isSet(provider.getHelpHintTitle())) {
@@ -291,6 +293,20 @@ implements IContextProvider, IHintsView, ISelectionListener, IComponentSelection
             // Content set
             if(StringUtils.isSet(provider.getHelpHintContent())) {
                 content = makeHTMLEntry(provider.getHelpHintContent());
+            }
+        }
+        // This is a Hint Content Provider
+        else if(actualObject instanceof IHintProvider) {
+            IHintProvider provider = (IHintProvider)actualObject;
+            
+            // Title set
+            if(StringUtils.isSet(provider.getHintTitle())) {
+                title = provider.getHintTitle();
+            }
+            
+            // Content set
+            if(StringUtils.isSet(provider.getHintContent())) {
+                content = makeHTMLEntry(provider.getHintContent());
             }
         }
 
