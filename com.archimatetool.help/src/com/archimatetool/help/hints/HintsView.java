@@ -48,7 +48,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.osgi.framework.Bundle;
 
 import com.archimatetool.editor.ui.IArchiImages;
-import com.archimatetool.editor.ui.IHelpHintProvider;
 import com.archimatetool.editor.ui.services.ComponentSelectionManager;
 import com.archimatetool.editor.ui.services.IComponentSelectionListener;
 import com.archimatetool.editor.utils.PlatformUtils;
@@ -57,7 +56,7 @@ import com.archimatetool.help.ArchiHelpPlugin;
 import com.archimatetool.model.IArchimateConcept;
 import com.archimatetool.model.IArchimateDiagramModel;
 import com.archimatetool.model.IDiagramModelComponent;
-import com.archimatetool.model.IHintProvider;
+import com.archimatetool.model.IHelpHintProvider;
 
 
 
@@ -281,23 +280,9 @@ implements IContextProvider, IHintsView, ISelectionListener, IComponentSelection
             path = hint.path;
         }
         
-        // This is an Application Help Hint Provider
-        if(selected instanceof IHelpHintProvider) {
-            IHelpHintProvider provider = (IHelpHintProvider)selected;
-            
-            // Title set
-            if(StringUtils.isSet(provider.getHelpHintTitle())) {
-                title = provider.getHelpHintTitle();
-            }
-            
-            // Content set
-            if(StringUtils.isSet(provider.getHelpHintContent())) {
-                content = makeHTMLEntry(provider.getHelpHintContent());
-            }
-        }
-        // This is a Hint Content Provider
-        else if(actualObject instanceof IHintProvider) {
-            IHintProvider provider = (IHintProvider)actualObject;
+        // This is a Help Hint Provider
+        if(actualObject instanceof IHelpHintProvider || selected instanceof IHelpHintProvider) {
+            IHelpHintProvider provider = (IHelpHintProvider)(actualObject instanceof IHelpHintProvider ? actualObject : selected);
             
             // Title set
             if(StringUtils.isSet(provider.getHintTitle())) {
