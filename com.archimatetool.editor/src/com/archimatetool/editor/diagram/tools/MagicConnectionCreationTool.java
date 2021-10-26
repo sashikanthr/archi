@@ -63,13 +63,6 @@ import com.archimatetool.model.viewpoints.ViewpointManager;
  */
 public class MagicConnectionCreationTool extends ConnectionCreationTool {
     
-    private static Cursor cursor = new Cursor(
-            null,
-            IArchiImages.ImageFactory.getImageDescriptor(IArchiImages.CURSOR_IMG_MAGIC_CONNECTOR).getImageData(ImageFactory.getLogicalDeviceZoom()),
-            0,
-            0);
-
-    
     /**
      * Flag to update Factory elements when hovering on relationship menu items
      * This is to ensure that when the user presses escape the menu selection is cancelled
@@ -82,8 +75,31 @@ public class MagicConnectionCreationTool extends ConnectionCreationTool {
     private boolean fCanSetCurrentCommand = true;
     
     public MagicConnectionCreationTool() {
-       setDefaultCursor(cursor);
-       setDisabledCursor(cursor);
+       setDefaultCursor(null);
+       setDisabledCursor(null);
+    }
+    
+    @Override
+    public void deactivate() {
+        super.deactivate();
+        
+        if(getDefaultCursor() != null) {
+            getDefaultCursor().dispose();
+            setDefaultCursor(null);
+        }
+    }
+    
+    @Override
+    public void activate() {
+        if(getDefaultCursor() == null) {
+            setDefaultCursor(new Cursor(
+                    null,
+                    IArchiImages.ImageFactory.getImageDescriptor(IArchiImages.CURSOR_IMG_MAGIC_CONNECTOR).getImageData(ImageFactory.getLogicalDeviceZoom()),
+                    0,
+                    0));
+        }
+        
+        super.activate();
     }
     
     /**

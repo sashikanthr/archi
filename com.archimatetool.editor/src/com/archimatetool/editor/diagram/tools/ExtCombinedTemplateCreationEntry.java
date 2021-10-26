@@ -5,10 +5,9 @@
  */
 package com.archimatetool.editor.diagram.tools;
 
-import org.eclipse.gef.Tool;
 import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
 import org.eclipse.gef.requests.CreationFactory;
-import org.eclipse.gef.tools.AbstractTool;
+import org.eclipse.gef.tools.CreationTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Cursor;
 
@@ -24,20 +23,37 @@ import com.archimatetool.editor.ui.ImageFactory;
  */
 public class ExtCombinedTemplateCreationEntry extends CombinedTemplateCreationEntry {
     
-    private static Cursor cursorAdd = new Cursor(
-            null,
-            IArchiImages.ImageFactory.getImageDescriptor(IArchiImages.CURSOR_IMG_ADD).getImageData(ImageFactory.getLogicalDeviceZoom()),
-            0,
-            0);
-    
     public ExtCombinedTemplateCreationEntry(String label, String shortDesc, CreationFactory factory, ImageDescriptor iconSmall, ImageDescriptor iconLarge) {
         super(label, shortDesc, factory, iconSmall, iconLarge);
+        setToolClass(ExtCombinedTemplateCreationEntryTool.class);
     }
     
-    @Override
-    public Tool createTool() {
-        AbstractTool tool = (AbstractTool)super.createTool();
-        tool.setDefaultCursor(cursorAdd);
-        return tool;
+    public static class ExtCombinedTemplateCreationEntryTool extends CreationTool {
+        public ExtCombinedTemplateCreationEntryTool() {
+            setDefaultCursor(null);
+        }
+        
+        @Override
+        public void deactivate() {
+            super.deactivate();
+
+            if(getDefaultCursor() != null) {
+                getDefaultCursor().dispose();
+                setDefaultCursor(null);
+            }
+        }
+        
+        @Override
+        public void activate() {
+            if(getDefaultCursor() == null) {
+                setDefaultCursor(new Cursor(
+                        null,
+                        IArchiImages.ImageFactory.getImageDescriptor(IArchiImages.CURSOR_IMG_ADD).getImageData(ImageFactory.getLogicalDeviceZoom()),
+                        0,
+                        0));
+            }
+            
+            super.activate();
+        }
     }
 }

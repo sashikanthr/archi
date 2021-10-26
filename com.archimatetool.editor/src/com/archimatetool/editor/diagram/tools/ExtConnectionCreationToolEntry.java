@@ -5,10 +5,9 @@
  */
 package com.archimatetool.editor.diagram.tools;
 
-import org.eclipse.gef.Tool;
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
 import org.eclipse.gef.requests.CreationFactory;
-import org.eclipse.gef.tools.AbstractTool;
+import org.eclipse.gef.tools.ConnectionCreationTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Cursor;
 
@@ -24,27 +23,55 @@ import com.archimatetool.editor.ui.ImageFactory;
  */
 public class ExtConnectionCreationToolEntry extends ConnectionCreationToolEntry {
     
-    private static Cursor cursorAdd = new Cursor(
-            null,
-            IArchiImages.ImageFactory.getImageDescriptor(IArchiImages.CURSOR_IMG_ADD_CONNECTION).getImageData(ImageFactory.getLogicalDeviceZoom()),
-            0,
-            0);
-
-    private static Cursor cursorAddNot = new Cursor(
-            null,
-            IArchiImages.ImageFactory.getImageDescriptor(IArchiImages.CURSOR_IMG_ADD_NOT_CONNECTION).getImageData(ImageFactory.getLogicalDeviceZoom()),
-            0,
-            0);
-    
     public ExtConnectionCreationToolEntry(String label, String shortDesc, CreationFactory factory, ImageDescriptor iconSmall, ImageDescriptor iconLarge) {
         super(label, shortDesc, factory, iconSmall, iconLarge);
+        setToolClass(ExtConnectionCreationToolEntryTool.class);
     }
     
-    @Override
-    public Tool createTool() {
-        AbstractTool tool = (AbstractTool)super.createTool();
-        tool.setDefaultCursor(cursorAdd);
-        tool.setDisabledCursor(cursorAddNot);
-        return tool;
+    public static class ExtConnectionCreationToolEntryTool extends ConnectionCreationTool {
+        public ExtConnectionCreationToolEntryTool() {
+            setDefaultCursor(null);
+            setDisabledCursor(null);
+        }
+        
+        @Override
+        public void deactivate() {
+            super.deactivate();
+            doCursors();
+        }
+        
+        @Override
+        public void activate() {
+            doCursors();
+            super.activate();
+        }
+        
+        private void doCursors() {
+            // Set this first because super.getDisabledCursor() will return super.getDefaultCursor() if null
+            if(getDisabledCursor() == null) {
+                setDisabledCursor(createCursor(IArchiImages.CURSOR_IMG_ADD_NOT_CONNECTION));
+            }
+            else {
+                getDisabledCursor().dispose();
+                setDisabledCursor(null);
+            }
+            
+            if(getDefaultCursor() == null) {
+                setDefaultCursor(createCursor(IArchiImages.CURSOR_IMG_ADD_CONNECTION));
+            }
+            else {
+                getDefaultCursor().dispose();
+                setDefaultCursor(null);
+            }
+        }
+        
+        private Cursor createCursor(String imageName) {
+            return new Cursor(
+                    null,
+                    IArchiImages.ImageFactory.getImageDescriptor(imageName).getImageData(ImageFactory.getLogicalDeviceZoom()),
+                    0,
+                    0);
+        }
     }
+
 }
